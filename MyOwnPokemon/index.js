@@ -6,52 +6,102 @@ canva.height = 576;
 
 const c = canva.getContext('2d');
 
-class Sprite {
-    constructor ({position, velocity, src}) {
-        this.position = position
-        this.velocity = velocity
-
+class Resource {
+    constructor (src) {
+        
         this.image = new Image()
         this.image.src = src
     }
-    get x() {return this.position.x}
-    get y() {return this.position.y}
-    set x(val) {
-        this.position.x = val
-        animate()
+}
+
+class Map extends Resource {
+    constructor ({x, y, src}){
+        super(src)
+        this.x = x 
+        this.y = y
     }
-    set y(val) {
-        this.position.y = val
-        animate()
+
+    loadColisions() {
+        var i = -1;
+        while((i = colisions.indexOf(1025, i+1)) != -1){
+
+            var boundry = new Boundry({
+                x: ((i+1)/70)>>0 * Boundry.side,
+                y: (i+1)%70 * Boundry.side
+            });
+            boundry.draw();
+            console.log(Boundry.side);
+        }
+    }
+
+    draw() {
+        c.drawImage(this.image, this.x, this.y);
     }
 }
 
-class Colision {
+class Player extends Resource {
+    constructor ({velocity, src}) {
+        super(src)
+        this.velocity = velocity;
+    }
 
-    constructor ({position}) {
-        this.position = position
+    move(way) {
+        //y + -> up ; y -  -> down; x + -> left  ; x -  -> rigth
+        
+        eval(`map.${way}= player.velocity`)
+        animate();
+    }
 
+    draw() {
+        c.drawImage(
+            this.image,
+            0,
+            0,
+            (this.image.width/4),
+            this.image.height, 
+            (canva.width/2 - (this.image.width/4)/2), 
+            (canva.height/2 - this.image.height/2),
+            (this.image.width/4),
+            this.image.height
+        )
+    }
+}
+
+class Boundry {
+
+    constructor ({x,y}) {
+        this.x = x
+        this.y = y
+        
+        this.side = 66;
+    }
+
+    draw(){
         c.fillStyle = 'red';
-        c.fillRect(this.position.x, this.position.y, 66, 66)
-        console.log(this.position.x)
+        c.fillRect(this.x, this.y, this.side, this.side)
     }
 }
 
 
 
-const map = new Sprite({
-    position: {
-        x: -1865,
-        y: -680
-    },
+const map = new Map({
+    x: -1865,
+    y: -680,
     src: './resources/Map.png'
 });
-const player = new Sprite({
+
+const player = new Player({
     velocity: 4,
-    src: './resources/Images/playerDown.png '
+    src: './resources/Images/playerDown.png'
 })
 
 
+function animate() {
+        map.draw();
+        map.loadColisions();
+        player.draw();
+
+}
 
 map.image.onload = () => {
     player.image.onload = () => {
@@ -59,49 +109,26 @@ map.image.onload = () => {
         
     }
 }
-colision = new Colision({
-    position: {
-        x: 0,
-        y: 0
-    }
-})
 
 
-function animate() {
-        c.drawImage(map.image, map.x, map.y);
-        c.drawImage(
-            player.image,
-            0,
-            0,
-            (player.image.width/4),
-            player.image.height, 
-            (canva.width/2 - (player.image.width/4)/2), 
-            (canva.height/2 - player.image.height/2),
-            (player.image.width/4),
-            player.image.height
-        )
-
-}
-
-
-function moove() {
-    map.x += player.velocity
-}
 
 window.addEventListener('keydown',  (e) => {
     switch (e.key){
         case 'w':
-            map.y += player.velocity
-            console.log(map.y)
+            //up
+            player.move('y +')
             break;
         case 'a':
-            map.x += player.velocity
+            //left
+            player.move('x +')
             break;
         case 'd':
-            map.x -= player.velocity
+            //rigth
+            player.move('x -')
             break;
         case 's':
-            map.y -= player.velocity
+            //down
+            player.move('y -')
             break;
     }
 });
