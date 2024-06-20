@@ -19,6 +19,10 @@ class Map extends Resource {
         super(src)
         this.x = x 
         this.y = y
+
+        this.squareSize = 66
+        this.colisions = []
+        this.loadColisions()
     }
 
     loadColisions() {
@@ -26,16 +30,17 @@ class Map extends Resource {
         while((i = colisions.indexOf(1025, i+1)) != -1){
 
             var boundry = new Boundry({
-                x: ((i+1)/70)>>0 * Boundry.side,
-                y: (i+1)%70 * Boundry.side
+                y: ((i/70)>>0)*this.squareSize + this.y,
+                x: (i%70)* this.squareSize + this.x,
+                side: this.squareSize
             });
-            boundry.draw();
-            console.log(Boundry.side);
+            this.colisions.push(boundry);
         }
     }
 
     draw() {
         c.drawImage(this.image, this.x, this.y);
+        this.colisions.forEach((boundry) => boundry.draw());
     }
 }
 
@@ -43,12 +48,25 @@ class Player extends Resource {
     constructor ({velocity, src}) {
         super(src)
         this.velocity = velocity;
+        this.x = (canva.width/2 - (this.image.width/4)/2)
+        this.y = (canva.height/2 - this.image.height/2)
+
     }
 
     move(way) {
+
+        const directions = {
+            "up": 
+        }
+
+        // ToDo: find a way to simplify this code for moovments
+
+
         //y + -> up ; y -  -> down; x + -> left  ; x -  -> rigth
-        
-        eval(`map.${way}= player.velocity`)
+        map.colisions.forEach((boundry) => {
+            boundry.= this.velocity
+        });
+        map.= this.velocity
         animate();
     }
 
@@ -59,26 +77,38 @@ class Player extends Resource {
             0,
             (this.image.width/4),
             this.image.height, 
-            (canva.width/2 - (this.image.width/4)/2), 
-            (canva.height/2 - this.image.height/2),
+            this.x, 
+            this.y,
             (this.image.width/4),
             this.image.height
-        )
+        );
+        player.boundryBox();
+    }
+
+    boundryBox() {
+        c.strokeRect(this.x, this.y+ 2*this.image.height/3, this.image.width/4, this.image.height/3)
     }
 }
 
 class Boundry {
 
-    constructor ({x,y}) {
-        this.x = x
-        this.y = y
-        
-        this.side = 66;
+    constructor ({x, y, side}) {
+        this.x = x;
+        this.y = y;
+        this.side = side;
+
     }
 
     draw(){
         c.fillStyle = 'red';
-        c.fillRect(this.x, this.y, this.side, this.side)
+
+        if(this.x < 0){
+            c.fillStyle = 'blue';
+            c.fillRect(this.x, this.y , 66, 66);
+        }
+       
+        c.fillRect(this.x, this.y , this.side, this.side)
+
     }
 }
 
@@ -98,7 +128,6 @@ const player = new Player({
 
 function animate() {
         map.draw();
-        map.loadColisions();
         player.draw();
 
 }
@@ -116,19 +145,19 @@ window.addEventListener('keydown',  (e) => {
     switch (e.key){
         case 'w':
             //up
-            player.move('y +')
+            player.move('up')
             break;
         case 'a':
             //left
-            player.move('x +')
+            player.move('left')
             break;
         case 'd':
             //rigth
-            player.move('x -')
+            player.move('right')
             break;
         case 's':
             //down
-            player.move('y -')
+            player.move('down')
             break;
     }
 });
