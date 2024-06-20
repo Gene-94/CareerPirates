@@ -51,22 +51,31 @@ class Player extends Resource {
         this.x = (canva.width/2 - (this.image.width/4)/2)
         this.y = (canva.height/2 - this.image.height/2)
 
+        this.boundryLeft = this.x
+        this.boundryRight = this.x + this.image.width/4
+        this.boundryTop = this.y - 2*this.image.height/3
+        this.boundryBottom = this.y - this.image.height
     }
 
-    move(way) {
-
-        const directions = {
-            "up": 
-        }
-
-        // ToDo: find a way to simplify this code for moovments
-
-
+    move(direction) {
         //y + -> up ; y -  -> down; x + -> left  ; x -  -> rigth
+
+        const axis = direction === 'up' || direction === 'down' ? 'y' : 'x';
+        const sign = direction === 'up' || direction === 'left' ? 1 : -1;
+        
         map.colisions.forEach((boundry) => {
-            boundry.= this.velocity
+            if( this.boundryRight >= boundry.x &&
+                this.boundryLeft <= (boundry.x + boundry.side) &&
+                this.boundryTop >= (boundry.y - boundry.side) && 
+                this.boundryBottom <= boundry.y
+            ){
+                alert("boundry")
+            }
+     
+            boundry[axis] += this.velocity * sign
         });
-        map.= this.velocity
+        map[axis] += this.velocity * sign
+ 
         animate();
     }
 
@@ -86,7 +95,16 @@ class Player extends Resource {
     }
 
     boundryBox() {
-        c.strokeRect(this.x, this.y+ 2*this.image.height/3, this.image.width/4, this.image.height/3)
+        c.strokeRect(this.x, this.y+ 2*this.image.height/3, this.image.width/4, this.image.height/3);
+
+        c.fillStyle = "white"
+        c.fillRect(this.x, this.y+ 2*this.image.height/3, 5, 5);
+        c.fillStyle = "green"
+        c.fillRect(this.x, this.y+this.image.height, 5, -5);
+        c.fillStyle = "black"
+        c.fillRect(this.x + this.image.width/4, this.y+ 2*this.image.height/3, -5, 5);
+        c.fillStyle = "pink"
+        c.fillRect(this.x + this.image.width/4, this.y+this.image.height, -5, -5);
     }
 }
 
@@ -142,6 +160,7 @@ map.image.onload = () => {
 
 
 window.addEventListener('keydown',  (e) => {
+    console.log(e.key)
     switch (e.key){
         case 'w':
             //up
