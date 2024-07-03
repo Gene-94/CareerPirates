@@ -16,19 +16,22 @@ const foreground = new Map({
 })
 
 const player = new Player({
-    velocity: 4,
-    src: './resources/Images/playerDown.png'
+    velocity: 7,
+    src: {
+        down: './resources/Images/playerDown.png',
+        up: './resources/Images/playerUp.png',
+        left: './resources/Images/playerLeft.png',
+        right: './resources/Images/playerRight.png'
+    }
 })
 
 
 function animate() {
         map.draw();
         player.draw();
-        foreground.draw()
+        foreground.draw();
 
 }
-
-var boundries = []
 
 function loadColisions() {
     var i = -1;
@@ -43,13 +46,13 @@ function loadColisions() {
     }
 }
 
+var boundries = []
 map.image.onload = () => {
     player.image.onload = () => {
         animate()
-        loadColisions() 
+        loadColisions()
     }
 }
-
 
 
 window.addEventListener('keydown',  (e) => {

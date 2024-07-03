@@ -3,6 +3,11 @@ class Resource {
         
         this.image = new Image()
         this.image.src = src
+        this.confirmLoad()
+        
+    }
+    async confirmLoad (){
+        await this.image.decode()
     }
 }
 
@@ -24,45 +29,32 @@ class Map extends Resource {
     }
 }
 
-class Player extends Resource {
+class Player {
     constructor ({velocity, src}) {
-        super(src)
+        this.direction = {
+            down: new Resource (src.down),
+            up: new Resource (src.up),
+            left: new Resource (src.left),
+            right: new Resource (src.right)
+        }
+        this.image = this.direction.down.image
         this.velocity = velocity;
         this.x = (canva.width/2 - (this.image.width/4)/2)
         this.y = (canva.height/2 - this.image.height/2)
+        this.pMov = 0
 
         this.aux = 0
     }
 
-    move(direction) {
+    move(dir) {
         //y + -> up ; y -  -> down; x + -> left  ; x -  -> rigth
         var allow = 1
-        const axis = direction === 'up' || direction === 'down' ? 'y' : 'x';
-        const sign = direction === 'up' || direction === 'left' ? 1 : -1;
-        /*
-        try
-        {map.colisions.forEach((boundry) => {
-            
-            boundry.allow({
-                bottomBorder: (this.y+this.image.height),
-                topBorder: (this.y+ 2*this.image.height/3),
-                rightBorder: (this.x + this.image.width/4), 
-                leftBorder: this.x,
-                axis: axis,
-                speed: this.velocity,
-                mod: sign,
-            });
-
-            boundry[axis] += this.velocity * sign
-
-        });
-        map[axis] += this.velocity * sign
-        }
-        catch
-        {
-        }
-        */
+        const axis = dir === 'up' || dir === 'down' ? 'y' : 'x';
+        const sign = dir === 'up' || dir === 'left' ? 1 : -1;
+ 
         boundries.forEach((boundry) => {
+            console.log(dir)
+            this.image = this.direction[dir].image
             boundry[axis] += this.velocity * sign
             if( 
                 (this.y+this.image.height) >= (boundry.y) &&
@@ -82,19 +74,21 @@ class Player extends Resource {
             boundries.forEach((boundry) => {
                 boundry[axis] += this.velocity * sign
             });
+            console.log(this.pMov)
             map[axis] += this.velocity * sign
             foreground[axis] += this.velocity * sign
-
+            
         }
-
+        this.pMov = (this.pMov+1) % 20
         animate();
+        
 
     }
 
     draw() {
         c.drawImage(
             this.image,
-            0,
+            this.image.width/4 * (this.pMov/5>>0),
             0,
             (this.image.width/4),
             this.image.height, 
@@ -103,7 +97,7 @@ class Player extends Resource {
             (this.image.width/4),
             this.image.height
         );
-        player.boundryBox();
+        //player.boundryBox();
     }
 
     boundryBox() {
@@ -129,35 +123,7 @@ class Boundry {
         this.color = color;
 
     }
-    /*
-    allow({
-        bottomBorder,
-        topBorder,
-        leftBorder,
-        rightBorder,
-        axis ,
-        speed ,
-        mod ,
-    }){
-        var allow = -1
-        this[axis] + this.velocity * sign
-        if( 
-            bottomBorder >= (this.y) &&
-            topBorder <= (this.y+this.side) &&
-            rightBorder >= (this.x) &&
-            leftBorder <= (this.x + this.side)
-        ){
-            
-            console.log("touching")
-            
-        }
-        else{
-            allow = 1
-        }
-        this[axis] - this.velocity * sign
-        return allow
-    }
-    */
+ 
     draw(){
         c.fillStyle = this.color;
         c.fillRect(this.x, this.y , this.side, this.side)
