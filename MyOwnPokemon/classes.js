@@ -4,28 +4,47 @@ class Resource {
         this.image = new Image()
         this.image.src = src
         this.confirmLoad()
-        
     }
     async confirmLoad (){
         await this.image.decode()
     }
 }
 
-class Map extends Resource {
+class Map {
     constructor ({x=-1865, y=-695, src}){
-        super(src)
+        this.background = new Resource (src.map)
+        this.foreground = new Resource (src.foreground)
         this.x = x 
         this.y = y
-
+        this.boundries = []
+        this.battleZones = []
         this.squareSize = 66
-        
+        this.loadZones(this.boundries, colisions)
+        this.loadZones(this.battleZones, battleZones)
+    }
+
+    loadZones(localArray, zonesData) {
+        var i = -1;
+        while((i = zonesData.indexOf(1025, i+1)) != -1){
+            var boundry = new Boundry({
+                y: ((i/70)>>0)*this.squareSize + this.y,
+                x: (i%70)* this.squareSize + this.x,
+                side: this.squareSize
+            });
+            localArray.push(boundry);
+        }
     }
 
     
-
-    draw() {
-        c.drawImage(this.image, this.x, this.y);
-        //this.colisions.forEach((boundry) => boundry.draw());
+    drawBoundries() {
+        this.boundries.forEach((boundry) => boundry.draw());
+        this.battleZones.forEach((boundry) => boundry.draw()); 
+    }
+    drawBackground(){
+        c.drawImage(this.background.image, this.x, this.y);
+    }
+    drawForeground(){
+        c.drawImage(this.foreground.image, this.x, this.y);
     }
 }
 
@@ -43,7 +62,6 @@ class Player {
         this.y = (canva.height/2 - this.image.height/2)
         this.pMov = 0
 
-        this.aux = 0
     }
 
     move(dir) {
@@ -51,10 +69,9 @@ class Player {
         var allow = 1
         const axis = dir === 'up' || dir === 'down' ? 'y' : 'x';
         const sign = dir === 'up' || dir === 'left' ? 1 : -1;
+        this.image = this.direction[dir].image
  
-        boundries.forEach((boundry) => {
-            console.log(dir)
-            this.image = this.direction[dir].image
+        map.boundries.forEach((boundry) => {
             boundry[axis] += this.velocity * sign
             if( 
                 (this.y+this.image.height) >= (boundry.y) &&
@@ -65,24 +82,46 @@ class Player {
                 boundry[axis] -= this.velocity * sign
                 allow = -1
                 return
-                
             }
             boundry[axis] -= this.velocity * sign
         });
 
         if (allow==1){
-            boundries.forEach((boundry) => {
+            map.boundries.forEach((boundry) => {
                 boundry[axis] += this.velocity * sign
             });
-            console.log(this.pMov)
+            map.battleZones.forEach((boundry) => {
+                boundry[axis] += this.velocity * sign
+            });
             map[axis] += this.velocity * sign
-            foreground[axis] += this.velocity * sign
-            
         }
+
         this.pMov = (this.pMov+1) % 20
         animate();
-        
 
+
+        map.battleZones.forEach((boundry) => {
+            if( 
+                //calculates if player boundrybox and player 
+                (this.y+this.image.height) >= (boundry.y) &&
+                (this.y+ 2*this.image.height/3) <= (boundry.y+boundry.side) &&
+                (this.x + this.image.width/4) >= (boundry.x) &&
+                this.x <= (boundry.x + boundry.side) &&
+                //only activate battle chanse if the majoraty of player boundry box is overlapping with battle area boundry box
+                //overlaping area calc
+                (Math.min(this.x+this.image.width/4, boundry.x + boundry.side) - Math.max(this.x, boundry.x)) *
+                (Math.min(this.y + this.image.height, boundry.y + boundry.side) - Math.max(this.y+ 2*this.image.height/3, boundry.y))
+                //player boundry box area calc and halved
+                >= (this.image.width/4 * this.image.height/3) / 2
+                // Ajust multiplier to adjust batle activation frequency
+                && (Math.floor(Math.random()*30) == 7)
+                
+
+            ){
+                alert("battle!")
+            }
+        })
+        
     }
 
     draw() {
@@ -97,6 +136,7 @@ class Player {
             (this.image.width/4),
             this.image.height
         );
+        //makes player boundry box and visible
         //player.boundryBox();
     }
 
