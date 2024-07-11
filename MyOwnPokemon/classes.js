@@ -118,10 +118,14 @@ class Player {
                 
 
             ){
-                alert("battle!")
+                this.activateBattle()
             }
         })
         
+    }
+
+    activateBattle() {
+        gsap.to
     }
 
     draw() {

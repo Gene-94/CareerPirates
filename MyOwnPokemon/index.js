@@ -1,8 +1,13 @@
 
 
 const canva = document.querySelector('canvas');
+
 canva.width = 1024;
 canva.height = 576;
+
+const transition = document.querySelector('#battleTransition');
+transition.width = 1024;
+transition.height = 576;
 
 const c = canva.getContext('2d');
 
@@ -37,7 +42,7 @@ function animate() {
 map.background.image.onload = () => {
     map.foreground.image.onload = () => {
         player.direction.down.image.onload = () => {
-            animate()
+            animate();
         }
     }
 }

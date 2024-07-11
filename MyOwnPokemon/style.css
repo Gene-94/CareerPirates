@@ -1,6 +1,28 @@
-body {background-color: black;}
+:root {
+    --gameWidth: 1024px;
+    --gameHeight: 576px;
+}
+
+body {
+    background-color: black;
+}
 
 canvas {
     background-color: white;
+    width: var(--gameWidth);
+    height: var(--gameHeight);
 
+}
+
+#battleTransition {
+    background-color: black;
+    width: var(--gameWidth);
+    height: var(--gameHeight);
+    position:absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
 }
