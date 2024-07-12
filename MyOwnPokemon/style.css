@@ -2,18 +2,17 @@
     --gameWidth: 1024px;
     --gameHeight: 576px;
 }
-
+* {
+    font-family: 'Press Start 2P', cursive;
+}
 body {
     background-color: black;
 }
 
-canvas {
-    background-color: black;
-    width: var(--gameWidth);
-    height: var(--gameHeight);
-
+.parent {
+    display: inline-block;
+    position: relative;
 }
-
 #battleTransition {
     background-color: black;
     width: var(--gameWidth);
@@ -21,4 +20,90 @@ canvas {
     position:absolute;
     opacity: 0;
     pointer-events: none;
+}
+canvas {
+    background-color: black;
+    width: var(--gameWidth);
+    height: var(--gameHeight);
+
+}
+
+.healthBox{
+    background-color: white;
+    width: 250px;
+    /* height: 100px; */
+    position: absolute;
+    border: 4px solid black;
+    padding: 12px;
+}
+
+.healthBox.enemy{
+    top: 50px;
+    left: 50px;
+}
+.healthBox.friend{
+    /* Battle bar width is 140, so that + 50*/
+    bottom: 190px;
+    right: 50px;
+}
+
+.healthBox h2 {
+    font-size: 16px;
+    padding:0;
+    margin:0;
+}
+
+.healthOverlay {
+    position: relative;
+}
+
+.healthBar {
+    height: 5px;
+}
+.healthBar.empty{
+    background-color: #ddd;
+    margin-top: 10px;
+}
+.healthBar.remaining{
+    background-color: green;
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+}
+
+
+#battleBar{
+    background-color: white;
+    height: 140px;
+    position: absolute;
+    bottom:0;
+    right: 0;
+    left: 0;
+    border-top: 4px black solid;
+    display: flex;
+}
+#attacks{
+    width: 66.66%;
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+#attacks button{
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+#attacks button:hover{
+
+}
+#attackType{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width:33.33%;
+    border-left: 4px solid black;
+}
+h3{
+    margin: 0px;
+    font-size: 16px;
 }

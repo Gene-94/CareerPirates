@@ -120,14 +120,16 @@ class Player {
                 
 
             ){
-                this.activateBattle()
+                this.enterBattle()
             }
         })
         
     }
 
-    activateBattle() {
+    enterBattle() {
         this.inBattle = true;
+        const battle = new Battle();  
+        //battle scene trasition    
         gsap.to(transition, {
             opacity: 1,
             repeat: 3,
@@ -137,11 +139,17 @@ class Player {
                 gsap.to(transition, {
                     opacity: 1,
                     duration: 0.4,
+                    onComplete() {
+                        battle.animate()
+                        gsap.to(transition, {
+                            opacity: 0,
+                            duration: 0.4,
+                        })
+                    }
                 })
-            }
+            }       
         })
-        
-        
+        //end of transition
     }
 
     draw() {
@@ -189,4 +197,75 @@ class Boundry {
         c.fillRect(this.x, this.y , this.side, this.side)
 
     }
+}
+
+class Battle {
+    constructor(){
+        this.enemy = new Monster({
+            src: './resources/Images/draggleSprite.png',
+            enemy: true,
+        });
+        this.mine = new Monster({
+            src: './resources/Images/embySprite.png',
+            enemy: false,
+        });
+        this.background = new Resource('./resources/Images/battleBackground.png');
+
+    }
+
+    animate() {
+        //draw background
+        c.drawImage(this.background.image, 0, 0);
+        //draw enemy monster
+        this.enemy.draw();
+        this.mine.draw();
+        //animate 
+        window.setTimeout(() => {
+            window.requestAnimationFrame(this.animate.bind(this))
+        }, 1000/2);
+        
+    }
+
+    activate() {
+       
+    }
+    
+    
+}
+
+class Monster extends Resource {
+    constructor({src, enemy=true}){
+        super(src)
+        this.frame = 0;
+        if(enemy){
+            this.x = 800;
+            this.y = 100;
+        }
+        else{
+            this.x = 280;
+            this.y = 325;
+        }
+    }
+
+    draw(){
+        //280, 325
+        //c.drawImage(this.image, 800, 100);
+        c.drawImage(
+            this.image,
+            this.image.width/4 * this.frame,
+            0,
+            (this.image.width/4),
+            this.image.height, 
+            this.x, 
+            this.y,
+            (this.image.width/4),
+            this.image.height
+        );
+        // iterate frames
+        this.frame = (this.frame+1) % 4;
+        
+        
+    }
+
+    
 }

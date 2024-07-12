@@ -43,9 +43,11 @@ map.background.image.onload = () => {
     map.foreground.image.onload = () => {
         player.direction.down.image.onload = () => {
             animate();
+            player.enterBattle()
         }
     }
 }
+
 
 
 window.addEventListener('keydown',  (e) => {

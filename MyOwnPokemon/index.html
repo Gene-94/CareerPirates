@@ -6,13 +6,43 @@
 
     
     <link rel="stylesheet" href="style.css">
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <title>Document</title>
 </head>
 <body>
-    <div>
+    <div class="parent">
         <div id="battleTransition"></div>
+
+        <div class="healthBox enemy inBattle">
+            <h2>Draggle</h2>
+            <div class="healthOverlay">
+                <div class="healthBar empty"></div>
+                <div class="healthBar remaining"></div>
+            </div>
+        </div>
+        <div class="healthBox friend inBattle">
+            <h2>Emby</h2>
+            <div class="healthOverlay">
+                <div class="healthBar empty"></div>
+                <div class="healthBar remaining"></div>
+            </div>
+        </div>
+
         <canvas></canvas>
+
+        <div id="battleBar" class="inBattle">
+            <div id="attacks">
+                <button>Attack1</button>
+                <button>Attack2</button>
+                <button>Attack2</button>
+                <button>Attack3</button>
+            </div>
+            <div id="attackType">
+                <h3>Attack Type</h3>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
