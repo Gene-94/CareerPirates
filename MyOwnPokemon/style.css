@@ -8,7 +8,7 @@ body {
 }
 
 canvas {
-    background-color: white;
+    background-color: black;
     width: var(--gameWidth);
     height: var(--gameHeight);
 
@@ -19,10 +19,6 @@ canvas {
     width: var(--gameWidth);
     height: var(--gameHeight);
     position:absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
     opacity: 0;
     pointer-events: none;
 }

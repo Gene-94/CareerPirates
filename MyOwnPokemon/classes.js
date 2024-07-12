@@ -55,16 +55,18 @@ class Player {
             up: new Resource (src.up),
             left: new Resource (src.left),
             right: new Resource (src.right)
-        }
-        this.image = this.direction.down.image
+        };
+        this.image = this.direction.down.image;
         this.velocity = velocity;
-        this.x = (canva.width/2 - (this.image.width/4)/2)
-        this.y = (canva.height/2 - this.image.height/2)
-        this.pMov = 0
+        this.x = (canva.width/2 - (this.image.width/4)/2);
+        this.y = (canva.height/2 - this.image.height/2);
+        this.pMov = 0;
+        this.inBattle = false;
 
     }
 
     move(dir) {
+        if(this.inBattle){return}
         //y + -> up ; y -  -> down; x + -> left  ; x -  -> rigth
         var allow = 1
         const axis = dir === 'up' || dir === 'down' ? 'y' : 'x';
@@ -125,7 +127,21 @@ class Player {
     }
 
     activateBattle() {
-        gsap.to
+        this.inBattle = true;
+        gsap.to(transition, {
+            opacity: 1,
+            repeat: 3,
+            yoyo: true,
+            duration: 0.4,
+            onComplete() {
+                gsap.to(transition, {
+                    opacity: 1,
+                    duration: 0.4,
+                })
+            }
+        })
+        
+        
     }
 
     draw() {
