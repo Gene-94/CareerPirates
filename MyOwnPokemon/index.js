@@ -31,25 +31,31 @@ const player = new Player({
     }
 })
 
+const imagesToLoad = [
+    map.background.image,
+    map.foreground.image,
+    player.direction.down.image,
+    player.direction.up.image,
+    player.direction.left.image,
+    player.direction.right.image,
+];
+
+Promise.all(imagesToLoad.map(image => new Promise(resolve => image.onload = resolve)))
+    .then(() => animate()); // Start animation after all images are loaded
+
 
 function animate() {
         map.drawBackground();
-        map.drawBoundries();
+        //map.drawBoundries();
         player.draw();
         map.drawForeground();
 }
 
-map.background.image.onload = () => {
-    map.foreground.image.onload = () => {
-        player.direction.down.image.onload = () => {
-            animate();
-            player.enterBattle()
-        }
-    }
-}
+animate();
+player.enterBattle()
 
 
-
+// player moovement
 window.addEventListener('keydown',  (e) => {
     switch (e.key){
         case 'w':

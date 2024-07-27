@@ -2,11 +2,8 @@ class Resource {
     constructor (src) {
         
         this.image = new Image()
+        this.image.onload =  console.log([this])
         this.image.src = src
-        this.confirmLoad()
-    }
-    async confirmLoad (){
-        await this.image.decode()
     }
 }
 
@@ -130,26 +127,9 @@ class Player {
         this.inBattle = true;
         const battle = new Battle();  
         //battle scene trasition    
-        gsap.to(transition, {
-            opacity: 1,
-            repeat: 3,
-            yoyo: true,
-            duration: 0.4,
-            onComplete() {
-                gsap.to(transition, {
-                    opacity: 1,
-                    duration: 0.4,
-                    onComplete() {
-                        battle.animate()
-                        gsap.to(transition, {
-                            opacity: 0,
-                            duration: 0.4,
-                        })
-                    }
-                })
-            }       
-        })
+        battle.transition()
         //end of transition
+
     }
 
     draw() {
@@ -201,29 +181,70 @@ class Boundry {
 
 class Battle {
     constructor(){
+        this.inBattle = true;
         this.enemy = new Monster({
-            src: './resources/Images/draggleSprite.png',
+            mon: pokemon[1],
             enemy: true,
         });
         this.mine = new Monster({
-            src: './resources/Images/embySprite.png',
+            mon: pokemon[0],
             enemy: false,
         });
         this.background = new Resource('./resources/Images/battleBackground.png');
 
+        //for in battle attacks
+        document.querySelectorAll('.attack').forEach((button, index) => {
+            button.innerHTML = this.mine.attacks[index].name
+            button.addEventListener('click', () => {
+                this.mine.attack(index, this.enemy);
+            })
+        })
+
+        this.lastUpdateTime = 0;
+        this.deltaTime = 1000 / 2;
+        
     }
 
+    transition() {
+        gsap.to(transition, {
+            opacity: 1,
+            repeat: 3,
+            yoyo: true,
+            duration: 0.4,
+            onComplete: () => {
+                gsap.to(transition, {
+                    opacity: 1,
+                    duration: 0.4,
+                    onComplete: () => {
+                        
+                        this.draw();
+                        gsap.to(transition, {
+                            opacity: 0,
+                            duration: 0.4,
+                        })
+                    }
+                })
+            }       
+        })
+    }
+    
     animate() {
+
+    }
+
+    terminate() {
+        this.inBattle = false
+    }
+    
+    draw() {
         //draw background
-        c.drawImage(this.background.image, 0, 0);
-        //draw enemy monster
-        this.enemy.draw();
-        this.mine.draw();
-        //animate 
-        window.setTimeout(() => {
-            window.requestAnimationFrame(this.animate.bind(this))
-        }, 1000/2);
-        
+       c.drawImage(this.background.image, 0, 0);
+       //draw enemy monster    
+       //this.enemy.draw()
+       //this.mine.draw()
+       this.enemy.draw()
+       this.mine.draw()
+       window.requestAnimationFrame(this.draw.bind(this));
     }
 
     activate() {
@@ -234,8 +255,15 @@ class Battle {
 }
 
 class Monster extends Resource {
-    constructor({src, enemy=true}){
-        super(src)
+    constructor({enemy=true, mon}){
+        super(mon.src)
+        this.frameRate=0;
+        this.name = mon.name;
+        this.attacks = mon.attacks;
+        this.totalHealth = mon.totalHealth;
+        this.remainingHealth = mon.remainingHealth;
+        this.owned = mon.owned;
+        this.main = mon.main;
         this.frame = 0;
         if(enemy){
             this.x = 800;
@@ -245,6 +273,16 @@ class Monster extends Resource {
             this.x = 280;
             this.y = 325;
         }
+    }
+
+    attack(index = -1, enemy){
+        if (index == -1) {index = Math.floor(Math.random()*4)}
+        console.log(this.attacks[index].name + " clicked")
+        attackAnimations[this.attacks[index].name](this, enemy)
+        
+    }
+
+    animate() {
     }
 
     draw(){
@@ -261,10 +299,12 @@ class Monster extends Resource {
             (this.image.width/4),
             this.image.height
         );
-        // iterate frames
-        this.frame = (this.frame+1) % 4;
-        
-        
+        if(this.frameRate > 30) {
+            console.log("animare")
+            this.frame = (this.frame+1) % 4;
+            this.frameRate = 0;
+        }
+        this.frameRate ++
     }
 
     
